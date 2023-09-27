@@ -7,4 +7,6 @@ module com.syseng.drawingapplication {
 
     opens com.syseng.drawingapplication to javafx.fxml;
     exports com.syseng.drawingapplication;
+    exports com.syseng.drawingapplication.rectangle;
+    opens com.syseng.drawingapplication.rectangle to javafx.fxml;
 }
