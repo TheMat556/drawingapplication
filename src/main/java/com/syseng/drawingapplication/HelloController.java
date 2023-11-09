@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
@@ -18,7 +19,16 @@ public class HelloController {
     private RadioButton optionRectangleRadioButton;
 
     @FXML
+    private RadioButton optionCommentBoxRadioButton;
+
+    @FXML
     private RadioButton optionLineRadioButton;
+
+    @FXML
+    private RadioButton optionTextButton;
+
+    @FXML
+    private TextField textInputField;
 
     @FXML
     private Canvas drawingCanvas;
@@ -34,7 +44,11 @@ public class HelloController {
 
         ToggleGroup toggleGroup = new ToggleGroup();
         optionRectangleRadioButton.setToggleGroup(toggleGroup);
+        optionCommentBoxRadioButton.setToggleGroup(toggleGroup);
         optionLineRadioButton.setToggleGroup(toggleGroup);
+        optionTextButton.setToggleGroup(toggleGroup);
+
+        textInputField.visibleProperty().bind(optionTextButton.selectedProperty());
     }
 
     RectangleServiceImpl rectangleService;
@@ -54,6 +68,12 @@ public class HelloController {
             if (!rectangleService.doesRectangleOverlap(rectangle)) {
                 rectangleService.addRectangle(rectangle);
                 drawService.handleDrawRectangle(x, y);
+            }
+        } else if (optionCommentBoxRadioButton.isSelected()) {
+            Rectangle rectangle = new Rectangle(x, y, rectangleWidth, rectangleWidth);
+            if (!rectangleService.doesRectangleOverlap(rectangle)) {
+                rectangleService.addCommentBox(rectangle);
+                drawService.drawCommentBox(x, y);
             }
         } else if (optionLineRadioButton.isSelected()) {
             Point2D middleInRectBounds = rectangleService.calcMiddleInRectBounds(x, y);
@@ -75,8 +95,27 @@ public class HelloController {
                 }
 
                 lineService.addLine(line);
-                drawService.handleDrawLine(line);
+                if(rectangleService.containsCommentBox(line.getStartX(), line.getStartY()) ||
+                rectangleService.containsCommentBox(line.getEndX(), line.getEndY())) {
+                    drawService.handleDrawDottedLine(line);
+                } else {
+                    drawService.handleDrawLine(line);
+                }
+
                 lineService.resetFirstPoint();
+            }
+        } else if (optionTextButton.isSelected()) {
+            if(textInputField.getText().isEmpty()) {
+                return;
+            }
+
+            Point2D middleInRectBounds = rectangleService.calcMiddleInRectBounds(x, y);
+
+            if (middleInRectBounds != null && !rectangleService.hasTitle(x, y)) {
+                double offsetX =  (middleInRectBounds.getX() - rectangleWidth / 2);
+                double offsetY = middleInRectBounds.getY() + rectangleWidth / 2 + 10;
+                rectangleService.addTitle(textInputField.getText(), x, y);
+                drawService.handleDrawText(textInputField.getText(),  offsetX, offsetY);
             }
         }
     }

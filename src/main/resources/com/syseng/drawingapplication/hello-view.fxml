@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.syseng.drawingapplication.HelloController">
   <padding>
@@ -16,9 +13,11 @@
 
   <HBox spacing="10.0" alignment="CENTER">
     <RadioButton text="Rectangle" fx:id="optionRectangleRadioButton"/>
+    <RadioButton text="Comment Box" fx:id="optionCommentBoxRadioButton"/>
     <RadioButton text="Line" fx:id="optionLineRadioButton"/>
+    <RadioButton text="Text" fx:id="optionTextButton"/>
+    <TextField fx:id="textInputField" promptText="Enter text" visible="false"/>
   </HBox>
 
-  <!-- Add a Canvas for drawing -->
   <Canvas fx:id="drawingCanvas" width="400" height="400"/>
 </VBox>
