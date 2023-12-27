@@ -3,6 +3,8 @@ package com.syseng.drawingapplication.rectangle;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
+import java.util.List;
+
 public interface RectangleService {
 
     boolean doesRectangleOverlap(Rectangle newRectangle);
@@ -18,4 +20,7 @@ public interface RectangleService {
     void addTitle(String title, double x, double y);
 
     boolean hasTitle(double x, double y);
+
+    List<AdvancedRectangle> getRectangleList();
+
 }

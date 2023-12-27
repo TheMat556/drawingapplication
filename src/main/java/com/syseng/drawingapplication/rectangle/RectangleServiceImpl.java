@@ -2,16 +2,18 @@ package com.syseng.drawingapplication.rectangle;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class RectangleServiceImpl implements RectangleService {
-    List<AdvancedRectangle> rectangleList = new ArrayList<>();
+    private List<AdvancedRectangle> rectangleList = new ArrayList<>();
 
     @Override
-    public boolean doesRectangleOverlap(Rectangle pendingRectangle) {
+    public boolean doesRectangleOverlap(Rectangle pendingRectangle)
+    {
         for (AdvancedRectangle rectangle : rectangleList) {
             boolean isOverlapping = rectangle.getBoundsInParent()
                     .intersects(pendingRectangle.getBoundsInParent());
@@ -23,7 +25,8 @@ public class RectangleServiceImpl implements RectangleService {
     }
 
     @Override
-    public Point2D calcMiddleInRectBounds(double x, double y) {
+    public Point2D calcMiddleInRectBounds(double x, double y)
+    {
         for (AdvancedRectangle rectangle : rectangleList) {
             boolean inBounds = rectangle.contains(x, y);
             if (inBounds) {
@@ -34,33 +37,37 @@ public class RectangleServiceImpl implements RectangleService {
     }
 
     @Override
-    public boolean containsCommentBox(double x, double y) {
+    public boolean containsCommentBox(double x, double y)
+    {
         for (AdvancedRectangle rectangle : rectangleList) {
             boolean inBounds = rectangle.contains(x, y);
             if (inBounds) {
-               if(rectangle.isCommentBox()) {
-                   return true;
-               }
+                if (rectangle.isCommentBox()) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     @Override
-    public void addRectangle(Rectangle rectangle) {
+    public void addRectangle(Rectangle rectangle)
+    {
         AdvancedRectangle advancedRectangle = this.createAdvancedRectangle(rectangle);
         rectangleList.add(advancedRectangle);
     }
 
     @Override
-    public void addCommentBox(Rectangle rectangle) {
+    public void addCommentBox(Rectangle rectangle)
+    {
         AdvancedRectangle advancedRectangle = this.createAdvancedRectangle(rectangle);
         advancedRectangle.setCommentBox(true);
         rectangleList.add(advancedRectangle);
     }
 
     @Override
-    public void addTitle(String title, double x, double y) {
+    public void addTitle(String title, double x, double y)
+    {
         for (AdvancedRectangle rectangle : rectangleList) {
             boolean inBounds = rectangle.contains(x, y);
             if (inBounds) {
@@ -70,7 +77,8 @@ public class RectangleServiceImpl implements RectangleService {
     }
 
     @Override
-    public boolean hasTitle(double x, double y) {
+    public boolean hasTitle(double x, double y)
+    {
         for (AdvancedRectangle rectangle : rectangleList) {
             boolean inBounds = rectangle.contains(x, y);
             if (inBounds) {
@@ -80,6 +88,14 @@ public class RectangleServiceImpl implements RectangleService {
         return false;
     }
 
-    private AdvancedRectangle createAdvancedRectangle(Rectangle rectangle) {
+    private AdvancedRectangle createAdvancedRectangle(Rectangle rectangle)
+    {
         return new AdvancedRectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
-    }}
+    }
+
+    @Override
+    public List<AdvancedRectangle> getRectangleList()
+    {
+        return this.rectangleList;
+    }
+}

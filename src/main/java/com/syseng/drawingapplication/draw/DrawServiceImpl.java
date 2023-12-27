@@ -26,6 +26,16 @@ public class DrawServiceImpl implements DrawService {
     }
 
     @Override
+    public void handleDrawRectangle(double x, double y,double width)
+    {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(2.0);
+
+        gc.strokeRect(x, y, width, width);
+    }
+
+    @Override
     public void drawCommentBox(double x, double y)
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -34,6 +44,18 @@ public class DrawServiceImpl implements DrawService {
         gc.setLineWidth(2.0);
 
         gc.strokeRect(x, y, rectangleWidth, rectangleWidth);
+        gc.setLineDashes(1);
+    }
+
+    @Override
+    public void drawCommentBox(double x, double y, double width)
+    {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setStroke(Color.BLACK);
+        gc.setLineDashes(3.0);
+        gc.setLineWidth(1.0);
+
+        gc.strokeRect(x, y, width, width);
         gc.setLineDashes(1);
     }
 
@@ -73,6 +95,7 @@ public class DrawServiceImpl implements DrawService {
 
     @Override
     public void handleDrawText(String text, double x, double y) {
+        System.out.println("!!!");
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.RED);
         gc.fillText(text, x, y);

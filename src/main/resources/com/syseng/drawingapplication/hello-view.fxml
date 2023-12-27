@@ -19,5 +19,10 @@
     <TextField fx:id="textInputField" promptText="Enter text" visible="false"/>
   </HBox>
 
-  <Canvas fx:id="drawingCanvas" width="400" height="400"/>
+  <HBox>
+    <Canvas fx:id="drawingCanvas" width="400" height="400"/>
+    <Canvas fx:id="overview" width="100" height="100"/>
+  </HBox>
+
+
 </VBox>

@@ -1,7 +1,12 @@
 package com.syseng.drawingapplication;
 
+import com.syseng.drawingapplication.draw.DrawService;
 import com.syseng.drawingapplication.draw.DrawServiceImpl;
+import com.syseng.drawingapplication.line.LineService;
 import com.syseng.drawingapplication.line.LineServiceImpl;
+import com.syseng.drawingapplication.observer.Subject;
+import com.syseng.drawingapplication.overview.OverviewServiceImpl;
+import com.syseng.drawingapplication.rectangle.RectangleService;
 import com.syseng.drawingapplication.rectangle.RectangleServiceImpl;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -34,6 +39,9 @@ public class HelloController {
     private Canvas drawingCanvas;
 
     @FXML
+    private Canvas overview;
+
+    @FXML
     private void initialize()
     {
         drawingCanvas.setOnMouseClicked(this::handleCanvasClick);
@@ -41,6 +49,8 @@ public class HelloController {
         rectangleService = new RectangleServiceImpl();
         lineService = new LineServiceImpl();
         drawService = new DrawServiceImpl(drawingCanvas);
+        overviewService = new OverviewServiceImpl(new Subject(), overview,
+                this.rectangleService, this.lineService);
 
         ToggleGroup toggleGroup = new ToggleGroup();
         optionRectangleRadioButton.setToggleGroup(toggleGroup);
@@ -48,12 +58,15 @@ public class HelloController {
         optionLineRadioButton.setToggleGroup(toggleGroup);
         optionTextButton.setToggleGroup(toggleGroup);
 
-        textInputField.visibleProperty().bind(optionTextButton.selectedProperty());
+        textInputField.visibleProperty()
+                .bind(optionTextButton.selectedProperty());
     }
 
-    RectangleServiceImpl rectangleService;
-    DrawServiceImpl drawService;
-    LineServiceImpl lineService;
+    RectangleService rectangleService;
+    DrawService drawService;
+    LineService lineService;
+
+    OverviewServiceImpl overviewService;
 
     private static final double rectangleWidth = 50;
 
@@ -69,12 +82,14 @@ public class HelloController {
                 rectangleService.addRectangle(rectangle);
                 drawService.handleDrawRectangle(x, y);
             }
+            overviewService.updateRectangle();
         } else if (optionCommentBoxRadioButton.isSelected()) {
             Rectangle rectangle = new Rectangle(x, y, rectangleWidth, rectangleWidth);
             if (!rectangleService.doesRectangleOverlap(rectangle)) {
                 rectangleService.addCommentBox(rectangle);
                 drawService.drawCommentBox(x, y);
             }
+            overviewService.updateCommentbox();
         } else if (optionLineRadioButton.isSelected()) {
             Point2D middleInRectBounds = rectangleService.calcMiddleInRectBounds(x, y);
 
@@ -95,28 +110,45 @@ public class HelloController {
                 }
 
                 lineService.addLine(line);
-                if(rectangleService.containsCommentBox(line.getStartX(), line.getStartY()) ||
-                rectangleService.containsCommentBox(line.getEndX(), line.getEndY())) {
+                if (rectangleService.containsCommentBox(line.getStartX(), line.getStartY()) &&
+                        rectangleService.containsCommentBox(line.getEndX(), line.getEndY())) {
+                    lineService.resetFirstPoint();
+                    return;
+                }
+                if (rectangleService.containsCommentBox(line.getStartX(), line.getStartY()) ||
+                        rectangleService.containsCommentBox(line.getEndX(), line.getEndY())) {
                     drawService.handleDrawDottedLine(line);
+                    overviewService.updateDottedLine();
+
                 } else {
                     drawService.handleDrawLine(line);
+                    overviewService.updateLine();
                 }
 
                 lineService.resetFirstPoint();
             }
         } else if (optionTextButton.isSelected()) {
-            if(textInputField.getText().isEmpty()) {
+            if (textInputField.getText()
+                    .isEmpty()) {
                 return;
             }
 
             Point2D middleInRectBounds = rectangleService.calcMiddleInRectBounds(x, y);
 
             if (middleInRectBounds != null && !rectangleService.hasTitle(x, y)) {
-                double offsetX =  (middleInRectBounds.getX() - rectangleWidth / 2);
+                double offsetX = (middleInRectBounds.getX() - rectangleWidth / 2);
                 double offsetY = middleInRectBounds.getY() + rectangleWidth / 2 + 10;
                 rectangleService.addTitle(textInputField.getText(), x, y);
-                drawService.handleDrawText(textInputField.getText(),  offsetX, offsetY);
+                drawService.handleDrawText(textInputField.getText(), offsetX, offsetY);
+            } else {
+                Point2D middleInLineBounds = lineService.calcMiddleOfLines(x, y);
+
+                if (middleInLineBounds != null) {
+                    drawService.handleDrawText(textInputField.getText(), middleInLineBounds.getX(), middleInLineBounds.getY());
+                }
             }
+
+
         }
     }
 }
